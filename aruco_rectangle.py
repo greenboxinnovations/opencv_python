@@ -1,5 +1,7 @@
 import cv2
 import cv2.aruco as aruco
+
+import collections
  
 ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
 ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
@@ -29,10 +31,43 @@ while(True):
             '''
             #lists of ids and the corners beloning to each id
         corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
-        # print(corners)     
-        gray = aruco.drawDetectedMarkers(gray, corners)
+        # print(corners)
+
+
+
+        # make dictionary to rearrange
+        myDict = {}
+        id_list = ids.tolist()
+
+        # only first corner from aruco marker
+        c_list = []
+        for i, id_single in enumerate(ids):
+
+            # for plotting
+            c_list.append(corners[i][0][0].tolist())            
+
+            # for rearranging
+            myDict[id_list[i][0]] = corners[i][0][0].tolist()         
+
+        # plot first corner
+        for p in c_list:
+            # print(p)
+            # print(tuple(int(s) for s in p))                
+            cv2.circle(gray,tuple(int(s) for s in p), 10, (0,0,255), -1)
+
+
+        if once:
+            once = False
+            # rearrange by ids
+            # print(myDict)
+            od = collections.OrderedDict(sorted(myDict.items()))
+            # print(od)
+            for k, v in od.items(): print(k, v)
+            
      
-        #print(rejectedImgPoints)
+             
+        gray = aruco.drawDetectedMarkers(gray, corners)
+             
         # Display the resulting frame
         cv2.imshow('frame',gray)
         if cv2.waitKey(1) & 0xFF == ord('q'):
