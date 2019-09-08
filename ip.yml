@@ -1,0 +1,4 @@
+%YAML:1.0
+---
+ip: "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
+# ip: "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"

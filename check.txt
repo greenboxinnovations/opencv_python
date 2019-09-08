@@ -1,0 +1,7 @@
+
+For checking the accuracy of your stereo calibration, I would consider a different approach:
+
+Use the function stereoRectify to get the rectification transformation for the camera. Use the translation and rotation matrices you got from stereoCalibrate.
+Perform initUndistortRectifyMap once for each camera. Use
+Use the results you got to remap the images from both cameras.
+If your calibration went well, the output images should be rectified and undistorted
