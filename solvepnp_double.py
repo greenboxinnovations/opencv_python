@@ -5,30 +5,58 @@ import numpy as np
 
 import collections
  
-ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
-ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
+
+ip_left =  "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
+ip_right = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"
+
+# ip_left =   "rtsp://192.168.0.140:8554/live0.264"
+# ip_right = "rtsp://192.168.0.141:8554/live0.264"
 
 cap1 = cv2.VideoCapture(ip_left)
 cap2 = cv2.VideoCapture(ip_right)
 
-once = True
+disp = True
  
-fs = cv2.FileStorage("intrinsics.yml", cv2.FILE_STORAGE_READ)
-cm1 = fs.getNode("M1").mat()
-dc1 = fs.getNode("D1").mat()
-cm2 = fs.getNode("M2").mat()
-dc2 = fs.getNode("D2").mat()
+# fs = cv2.FileStorage("intrinsics.yml", cv2.FILE_STORAGE_READ)
+# cm1 = fs.getNode("M1").mat()
+# dc1 = fs.getNode("D1").mat()
+# cm2 = fs.getNode("M2").mat()
+# dc2 = fs.getNode("D2").mat()
+
+
+
+
+fs1 = cv2.FileStorage("cam_123.yml", cv2.FILE_STORAGE_READ)
+fs2 = cv2.FileStorage("cam_124.yml", cv2.FILE_STORAGE_READ)
+# fs1 = cv2.FileStorage("cam_140.yml", cv2.FILE_STORAGE_READ)
+# fs2 = cv2.FileStorage("cam_141.yml", cv2.FILE_STORAGE_READ)
+
+cm1 = fs1.getNode("camera_matrix").mat()
+dc1 = fs1.getNode("distortion_coefficients").mat()
+cm2 = fs2.getNode("camera_matrix").mat()
+dc2 = fs2.getNode("distortion_coefficients").mat()
+
+
 
 # 0,0               30.5,0
 # 
 # 
 # 
 # 0,20              30.5,20
+# ground = np.float32([
+#             [0, 0, 0],
+#             [0.305, 0, 0],
+#             [0.305, 0.2, 0], 
+#             [0, 0.2, 0]]
+#             ).reshape(-1, 3)
+
 ground = np.float32([
             [0, 0, 0],
-            [0.305, 0, 0],
-            [0.305, 0.2, 0], 
-            [0, 0.2, 0]]
+            [0.295, 0, 0],
+            [0.295, 0.21, 0], 
+            [0, 0.21, 0]]
             ).reshape(-1, 3)
 # print(ground) 
 
@@ -38,8 +66,8 @@ axis = np.float32([[0.2,0,0], [0,0.2,0], [0,0,-0.2]]).reshape(-1,3)
 cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
 cv2.namedWindow('image2', cv2.WINDOW_NORMAL)
 
-cv2.resizeWindow('image1', 640, 480)
-cv2.resizeWindow('image2', 640, 480)
+cv2.resizeWindow('image1', 1280, 720)
+cv2.resizeWindow('image2', 1280, 720)
 
 
 def draw(img, corners, imgpts):
@@ -161,16 +189,17 @@ while(True):
         # print(target_point2_ud)
 
         # exit()
+        if disp:
+            disp = False
+            points4D = cv2.triangulatePoints(P1, P2, target_point1, target_point2)
 
-        points4D = cv2.triangulatePoints(P1, P2, target_point1, target_point2)
-
-        points3D = cv2.convertPointsFromHomogeneous(points4D.T)
-        np.set_printoptions(suppress=True)
-        np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
-        print(points3D)
-        print("")
-        print("")
-        exit()
+            points3D = cv2.convertPointsFromHomogeneous(points4D.T)
+            np.set_printoptions(suppress=True)
+            np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
+            print(points3D)
+            print("")
+            print("")
+        # exit()
 
 
 
@@ -181,11 +210,20 @@ while(True):
         # Display the resulting frame
         cv2.imshow('image1',gray1)
         cv2.imshow('image2',gray2)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+
+
+        k = cv2.waitKey(33)
+        if k == ord('q'):
             break
+
+        if k == ord('d'):
+            disp = not disp
+
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
     except Exception as e:
-        pass
-        # raise e
+        # pass
+        raise e
  
 # When everything done, release the capture
 cap1.release()

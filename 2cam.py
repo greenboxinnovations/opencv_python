@@ -2,8 +2,11 @@ import numpy as np
 import cv2
 
 
-ip_left =  "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
-ip_right = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_left =  "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_right = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"
+
+ip_left =   "rtsp://192.168.0.140:8554/live0.264"
+ip_right = "rtsp://192.168.0.141:8554/live0.264"
 
 cap1 = cv2.VideoCapture(ip_left)
 cap2 = cv2.VideoCapture(ip_right)

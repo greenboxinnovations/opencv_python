@@ -1,12 +1,19 @@
 import cv2
 import cv2.aruco as aruco
  
-ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
-ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
 
-cap = cv2.VideoCapture(ip_right)
+# ip_left =  "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_right = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"
 
-once = True
+ip_left =   "rtsp://192.168.0.140:8554/live0.264"
+ip_right = "rtsp://192.168.0.141:8554/live0.264"
+
+cap = cv2.VideoCapture(ip_left)
+
+cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('image1', 1280, 720)
  
 while(True):
 
@@ -30,11 +37,11 @@ while(True):
             #lists of ids and the corners beloning to each id
         corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
         # print(corners)     
-        gray = aruco.drawDetectedMarkers(gray, corners)
+        gray = aruco.drawDetectedMarkers(gray, corners, ids)
      
         #print(rejectedImgPoints)
         # Display the resulting frame
-        cv2.imshow('frame',gray)
+        cv2.imshow('image1',gray)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     except Exception as e:

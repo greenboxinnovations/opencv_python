@@ -2,8 +2,11 @@ import cv2
 import cv2.aruco as aruco
 import numpy as np
  
-ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
-ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
+# ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
+
+ip_left =  "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
+ip_right = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"
 
 cap = cv2.VideoCapture(ip_right)
 
@@ -11,12 +14,12 @@ p = False
 
 
 # fs = cv2.FileStorage("cam_123.yml", cv2.FILE_STORAGE_READ)
-# fs = cv2.FileStorage("cam_124.yml", cv2.FILE_STORAGE_READ)
-# camera_matrix = fs.getNode("camera_matrix").mat()
-# distortion_coefficients = fs.getNode("distortion_coefficients").mat()
-fs = cv2.FileStorage("intrinsics.yml", cv2.FILE_STORAGE_READ)
-camera_matrix = fs.getNode("M2").mat()
-distortion_coefficients = fs.getNode("D2").mat()
+fs = cv2.FileStorage("cam_124.yml", cv2.FILE_STORAGE_READ)
+camera_matrix = fs.getNode("camera_matrix").mat()
+distortion_coefficients = fs.getNode("distortion_coefficients").mat()
+# fs = cv2.FileStorage("intrinsics.yml", cv2.FILE_STORAGE_READ)
+# camera_matrix = fs.getNode("M2").mat()
+# distortion_coefficients = fs.getNode("D2").mat()
 
 dist = True
  
