@@ -8,24 +8,29 @@ import collections
 ip_left =  "rtsp://admin:admin123@192.168.0.129:554/Streaming/Channels/1/?transportmode=unicast"
 ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
 
+ip_left =  "rtsp://192.168.0.128:554/Streaming/Channels/1/?transportmode=unicast"
+
 cap = cv2.VideoCapture(ip_left)
 
 once = True
  
-fs = cv2.FileStorage("intrinsics.yml", cv2.FILE_STORAGE_READ)
-cm1 = fs.getNode("M1").mat()
-dc1 = fs.getNode("D1").mat()
+fs = cv2.FileStorage("cam_128.yml", cv2.FILE_STORAGE_READ)
+# cm1 = fs.getNode("M1").mat()
+# dc1 = fs.getNode("D1").mat()
 
-# 0,0               30.5,0
+cm1 = fs.getNode("camera_matrix").mat()
+dc1 = fs.getNode("distortion_coefficients").mat()
+
+# 0,0               60,0
 # 
 # 
 # 
-# 0,20              30.5,20
+# 0,60              60,60
 ground = np.float32([
             [0, 0, 0],
-            [0.305, 0, 0],
-            [0.305, 0.2, 0], 
-            [0, 0.2, 0]]
+            [0.60, 0, 0],
+            [0.60, 0.60, 0], 
+            [0, 0.60, 0]]
             ).reshape(-1, 3)
 # print(ground) 
 
@@ -93,16 +98,18 @@ while(True):
             # rearrange by ids
             # print(myDict)
 
-        image_points1 = np.zeros(shape=(4,2))
+        # image_points1 = np.zeros(shape=(4,2))
+        image_points1 = np.zeros(shape=(len(myDict),2))
         # print(image_points1)
 
         od = collections.OrderedDict(sorted(myDict.items()))
         # print(od)
+        counter=0
         for k, v in od.items(): 
             # print(k, v)
             # np.insert(image_points1,v[0],v[1],axis=0)
-            image_points1[k-1] = [v[0],v[1]]
-
+            image_points1[counter] = [v[0],v[1]]
+            counter=counter+1
         # print(image_points1)
 
 
@@ -128,8 +135,8 @@ while(True):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     except Exception as e:
-        pass
-        # raise e
+        # pass
+        raise e
  
 # When everything done, release the capture
 cap.release()
