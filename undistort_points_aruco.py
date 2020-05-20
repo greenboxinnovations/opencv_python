@@ -6,15 +6,18 @@ import numpy as np
 # ip_right = "rtsp://admin:admin123@192.168.0.130:554/Streaming/Channels/1/?transportmode=unicast"
 
 ip_left =  "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast"
-ip_right = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast"
+ip_right = "rtsp://192.168.0.128:554/Streaming/Channels/1/?transportmode=unicast"
 
 cap = cv2.VideoCapture(ip_right)
 
 p = False
 
+cv2.namedWindow('image1', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('image1', 1280, 720)
 
 # fs = cv2.FileStorage("cam_123.yml", cv2.FILE_STORAGE_READ)
-fs = cv2.FileStorage("cam_124.yml", cv2.FILE_STORAGE_READ)
+# fs = cv2.FileStorage("cam_124.yml", cv2.FILE_STORAGE_READ)
+fs = cv2.FileStorage("cam_128.yml", cv2.FILE_STORAGE_READ)
 camera_matrix = fs.getNode("camera_matrix").mat()
 distortion_coefficients = fs.getNode("distortion_coefficients").mat()
 # fs = cv2.FileStorage("intrinsics.yml", cv2.FILE_STORAGE_READ)
@@ -22,7 +25,18 @@ distortion_coefficients = fs.getNode("distortion_coefficients").mat()
 # distortion_coefficients = fs.getNode("D2").mat()
 
 dist = True
- 
+
+
+def targetArucoId(ids, corners):
+        
+    # image_points = np.zeros(shape=(1,2))    
+
+    for i, id_single in enumerate(ids):
+        if id_single == 11:            
+            image_points = corners[i]
+
+    return image_points
+
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -50,7 +64,10 @@ while(True):
 
     if not p:
         p = True
-        print(corners[0])
+        # print(corners[0])
+
+        target = targetArucoId(ids,corners)
+        print(target[0][0])
         # print(corners)
 
         # for x in np.nditer(corners):
@@ -82,7 +99,11 @@ while(True):
 
     
     if dist:
-    	dst	= cv2.undistort(gray, camera_matrix, distortion_coefficients)
+        dst	= cv2.undistort(gray, camera_matrix, distortion_coefficients)
+        corners, ids, rejectedImgPoints = aruco.detectMarkers(dst, aruco_dict, parameters=parameters)
+        target = targetArucoId(ids,corners)
+        print(target[0][0])
+
     else:
     	dst = gray
  
@@ -96,7 +117,7 @@ while(True):
 
     #print(rejectedImgPoints)
     # Display the resulting frame
-    cv2.imshow('frame',dst)
+    cv2.imshow('image1',dst)
     k = cv2.waitKey(33)
     if k == ord('q'):
     	break
